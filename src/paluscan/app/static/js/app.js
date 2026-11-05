@@ -12,8 +12,14 @@ const fmtMs = new Intl.NumberFormat("fr-FR", { minimumFractionDigits: 1, maximum
 const $ = (selecteur, racine = document) => racine.querySelector(selecteur);
 const $$ = (selecteur, racine = document) => [...racine.querySelectorAll(selecteur)];
 
-function animerCompteur(el, cible, decimales) {
-  if (REDUIT_MOUVEMENT) return;
+function animerCompteur(el, cible, decimales, suffixe = "") {
+  if (REDUIT_MOUVEMENT) {
+    el.textContent = new Intl.NumberFormat("fr-FR", {
+      minimumFractionDigits: decimales,
+      maximumFractionDigits: decimales,
+    }).format(cible) + suffixe;
+    return;
+  }
   const debut = performance.now();
   const duree = 1100;
   const nf = new Intl.NumberFormat("fr-FR", {
@@ -23,7 +29,7 @@ function animerCompteur(el, cible, decimales) {
   const pas = (maintenant) => {
     const t = Math.min((maintenant - debut) / duree, 1);
     const easing = 1 - Math.pow(1 - t, 3);
-    el.textContent = nf.format(cible * easing);
+    el.textContent = nf.format(cible * easing) + suffixe;
     if (t < 1) requestAnimationFrame(pas);
   };
   requestAnimationFrame(pas);
@@ -38,10 +44,12 @@ function observerRevelation() {
         const valeur = $(".stat-value", entree.target);
         if (valeur && !valeur.dataset.animate) {
           valeur.dataset.animate = "1";
-          const texte = valeur.textContent.replace(/\u202f/g, "").replace(",", ".");
+          const brut = valeur.textContent;
+          const suffixe = brut.includes("%") ? "\u202f%" : "";
+          const texte = brut.replace(/\u202f/g, "").replace(",", ".").replace(/[%\s]/g, "");
           const nombre = parseFloat(texte);
           const decimales = (texte.split(".")[1] || "").length;
-          animerCompteur(valeur, nombre, decimales);
+          animerCompteur(valeur, nombre, decimales, suffixe);
         }
       }
     },
@@ -182,12 +190,12 @@ function remplirResultat(etat, r) {
   requestAnimationFrame(() => {
     cercle.style.strokeDashoffset = String(circonference * (1 - cible));
   });
-  animerCompteur(pourcentage, cible * 100, 1);
+  animerCompteur(pourcentage, cible * 100, 1, "\u202f%");
 
   const pInfectee = $("[data-champ=p-infectee]", noeud);
   const pSain = $("[data-champ=p-sain]", noeud);
-  pInfectee.textContent = fmtPct.format(cible * 100);
-  pSain.textContent = fmtPct.format(r.probabilite_sain * 100);
+  pInfectee.textContent = `${fmtPct.format(cible * 100)}\u202f%`;
+  pSain.textContent = `${fmtPct.format(r.probabilite_sain * 100)}\u202f%`;
   $("[data-champ=barre-infectee]", noeud).style.width = `${cible * 100}%`;
   $("[data-champ=barre-sain]", noeud).style.width = `${r.probabilite_sain * 100}%`;
 
@@ -226,7 +234,7 @@ async function analyserLot(fichiers) {
       const etiquette = $(".tag", ligne);
       etiquette.className = r.infectee ? "tag tag-pos" : "tag tag-neg";
       etiquette.textContent = r.infectee ? "Parasitée" : "Saine";
-      ligne.querySelectorAll("td")[2].textContent = fmtPct.format(r.probabilite_infection * 100);
+      ligne.querySelectorAll("td")[2].textContent = `${fmtPct.format(r.probabilite_infection * 100)}\u202f%`;
       ligne.querySelectorAll("td")[3].textContent = `${fmtMs.format(r.latence_ms)} ms`;
       $("tr", ligne).style.setProperty("--row", String(i));
       corpsLot.appendChild(ligne);

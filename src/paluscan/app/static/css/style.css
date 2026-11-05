@@ -1655,3 +1655,16 @@ table.batch td img.cell-mini {
   opacity: 1;
   transform: none;
 }
+
+/* Icônes de cartes et boutons non coupés */
+
+.card > svg:not(.chart-svg) {
+  width: 32px;
+  height: 32px;
+  color: var(--carmin);
+  margin-bottom: 0.9rem;
+}
+
+.btn {
+  white-space: nowrap;
+}
