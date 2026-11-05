@@ -66,11 +66,22 @@ def train(args: argparse.Namespace) -> None:
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.epochs)
     criterion = torch.nn.CrossEntropyLoss()
 
+    start_epoch, best_auc = 0, -1.0
+    if args.resume and TORCH_PATH.exists():
+        checkpoint = torch.load(TORCH_PATH, weights_only=True)
+        model.load_state_dict(checkpoint["state_dict"])
+        start_epoch = checkpoint["epoch"]
+        best_auc = checkpoint["val_auc"]
+        print(f"Reprise à l'époque {start_epoch + 1} (AUC de validation {best_auc:.4f})")
+
     history: list[dict] = []
-    best_auc = -1.0
+    history_path = REPORTS_DIR / "history.json"
+    if args.resume and history_path.exists():
+        prior = json.loads(history_path.read_text(encoding="utf-8"))
+        history = [h for h in prior if h["epoch"] <= start_epoch]
     patience_left = args.patience
 
-    for epoch in range(1, args.epochs + 1):
+    for epoch in range(start_epoch + 1, args.epochs + 1):
         model.train()
         running_loss, correct, seen = 0.0, 0, 0
         started = time.perf_counter()
@@ -126,6 +137,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--lr", type=float, default=1e-3)
     parser.add_argument("--patience", type=int, default=4)
     parser.add_argument("--max-train", type=int, default=0, help="plafonne le nombre de cellules d'entraînement")
+    parser.add_argument("--resume", action="store_true", help="reprend depuis le meilleur point sauvegardé")
     return parser.parse_args()
 
 

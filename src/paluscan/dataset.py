@@ -33,7 +33,7 @@ def augment(tensor: np.ndarray, rng: random.Random) -> np.ndarray:
         tensor = tensor[:, ::-1, :]
     rotation = rng.choice(_ROTATIONS)
     if rotation is not None:
-        tensor = np.rot90(tensor, k=_ROTATIONS.index(rotation))
+        tensor = np.rot90(tensor, k=_ROTATIONS.index(rotation), axes=(1, 2))
     return np.ascontiguousarray(tensor)
 
 

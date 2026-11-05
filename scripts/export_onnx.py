@@ -34,6 +34,16 @@ def main() -> None:
         dynamic_axes={"image": {0: "batch"}, "logits": {0: "batch"}},
         opset_version=17,
     )
+
+    # Le moteur d'export externalise les poids ; on les réincorpore pour
+    # obtenir un fichier unique, plus simple à versionner et à déployer.
+    import onnx
+
+    merged = onnx.load(ONNX_PATH, load_external_data=True)
+    onnx.save_model(merged, ONNX_PATH, save_as_external_data=False)
+    external = ONNX_PATH.with_suffix(".onnx.data")
+    if external.exists():
+        external.unlink()
     size_kb = ONNX_PATH.stat().st_size / 1024
     print(f"Modèle exporté : {ONNX_PATH} ({size_kb:.0f} Ko)")
 
