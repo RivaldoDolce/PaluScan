@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import random
-from typing import Callable
 
 import numpy as np
 from PIL import Image
@@ -53,9 +52,11 @@ class MalariaDataset(Dataset):
         self._rng = random.Random(seed)
 
     def __len__(self) -> int:
+        """Nombre de cellules du lot."""
         return len(self.records)
 
     def __getitem__(self, index: int) -> tuple[np.ndarray, int]:
+        """Tenseur normalisé et étiquette, éventuellement augmentés."""
         record = self.records[index]
         tensor = load_tensor(record, self.size)
         if self.train:

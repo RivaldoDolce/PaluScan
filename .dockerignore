@@ -1,0 +1,11 @@
+.git
+.venv
+data/cell_images
+data/sample
+reports/figures
+tests
+runs
+__pycache__
+*.pyc
+.ruff_cache
+.pytest_cache

@@ -35,6 +35,7 @@ def featurise(records: list) -> np.ndarray:
 
 
 def main() -> None:
+    """Entraîne la baseline PCA + régression logistique et enregistre ses prédictions."""
     started = time.perf_counter()
     records = discover(RAW_DIR)
     train, _, test = grouped_split(records)

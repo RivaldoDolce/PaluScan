@@ -18,6 +18,7 @@ from paluscan.model import MalariaNet  # noqa: E402
 
 
 def main() -> None:
+    """Rejoue l'entraînement ou charge le modèle puis exporte le réseau au format ONNX."""
     checkpoint = torch.load(TORCH_PATH, weights_only=True)
     model = MalariaNet()
     model.load_state_dict(checkpoint["state_dict"])

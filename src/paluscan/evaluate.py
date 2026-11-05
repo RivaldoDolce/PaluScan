@@ -15,11 +15,11 @@ from torch.utils.data import DataLoader
 
 from .config import BASELINE_PATH, METRICS_PATH, RAW_DIR, REPORTS_DIR, SEED, TORCH_PATH
 from .data import discover, grouped_split
-from .dataset import MalariaDataset, load_tensor
+from .dataset import MalariaDataset
 from .model import MalariaNet
 from .stats import (
-    average_precision,
     auc_mann_whitney,
+    average_precision,
     bootstrap_ci,
     calibration_curve,
     mcnemar_exact,
@@ -52,7 +52,7 @@ def specificity_at(scores: np.ndarray, labels: np.ndarray, threshold: float) -> 
 def downsample_curve(x: np.ndarray, y: np.ndarray, points: int = 60) -> list[list[float]]:
     """Réduit une courbe pour le rendu côté navigateur."""
     if len(x) <= points:
-        return [[float(a), float(b)] for a, b in zip(x, y)]
+        return [[float(a), float(b)] for a, b in zip(x, y, strict=False)]
     idx = np.unique(np.linspace(0, len(x) - 1, points).astype(int))
     return [[float(x[i]), float(y[i])] for i in idx]
 
@@ -108,17 +108,29 @@ def evaluate(args=None) -> None:
         },
         "sensibilite": {
             "valeur": round(sens, 4),
-            "ic95": [round(v, 4) for v in bootstrap_ci(scores, labels, lambda s, l: sensitivity_at(s, l, threshold), n_boot=1000)],
+            "ic95": [
+                round(v, 4)
+                for v in bootstrap_ci(
+                    scores, labels, lambda s, lb: sensitivity_at(s, lb, threshold), n_boot=1000
+                )
+            ],
             "wilson": [round(v, 4) for v in wilson_interval(tp, tp + fn)],
         },
         "specificite": {
             "valeur": round(spec, 4),
-            "ic95": [round(v, 4) for v in bootstrap_ci(scores, labels, lambda s, l: specificity_at(s, l, threshold), n_boot=1000)],
+            "ic95": [
+                round(v, 4)
+                for v in bootstrap_ci(
+                    scores, labels, lambda s, lb: specificity_at(s, lb, threshold), n_boot=1000
+                )
+            ],
             "wilson": [round(v, 4) for v in wilson_interval(tn, tn + fp)],
         },
         "auc": {
             "valeur": round(auc, 4),
-            "ic95": [round(v, 4) for v in bootstrap_ci(scores, labels, auc_mann_whitney, n_boot=1000)],
+            "ic95": [
+                round(v, 4) for v in bootstrap_ci(scores, labels, auc_mann_whitney, n_boot=1000)
+            ],
         },
         "precision_moyenne": round(ap, 4),
         "matrice_confusion": {"vp": tp, "fn": fn, "vn": tn, "fp": fp},

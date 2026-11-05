@@ -33,7 +33,6 @@ class OcclusionExplainer:
 
         acc = np.zeros((h, w), dtype=np.float32)
         weight = np.zeros((h, w), dtype=np.float32)
-        mask = np.ones_like(tensor, dtype=np.float32)
         fill = tensor.mean()
 
         for top in range(0, h - self.patch + 1, self.stride):
@@ -41,7 +40,9 @@ class OcclusionExplainer:
                 occluded = tensor.copy()
                 occluded[:, :, top : top + self.patch, left : left + self.patch] = fill
                 logit = float(
-                    self.session.run(None, {self.input_name: occluded.astype(np.float32)})[0][0, class_index]
+                    self.session.run(None, {self.input_name: occluded.astype(np.float32)})[0][
+                        0, class_index
+                    ]
                 )
                 acc[top : top + self.patch, left : left + self.patch] += baseline - logit
                 weight[top : top + self.patch, left : left + self.patch] += 1.0
@@ -56,7 +57,9 @@ class OcclusionExplainer:
     def overlay(image: Image.Image, map_array: np.ndarray, alpha: float = 0.45) -> Image.Image:
         """Superpose la carte de chaleur à l'image d'origine (échelle 150 px)."""
         base = image.convert("RGB").resize((IMG_SIZE * 2, IMG_SIZE * 2), Image.BILINEAR)
-        resized = Image.fromarray((map_array * 255).astype(np.uint8)).resize(base.size, Image.BILINEAR)
+        resized = Image.fromarray((map_array * 255).astype(np.uint8)).resize(
+            base.size, Image.BILINEAR
+        )
         heat = np.asarray(resized, dtype=np.float32) / 255.0
 
         # Dégradé rouge-jaune lisible sur fond de frottis.

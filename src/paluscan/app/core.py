@@ -41,17 +41,11 @@ class Moteur:
 
     def __init__(self, metriques: dict | None = None) -> None:
         self.predictor = Predictor()
-        self.explainer = OcclusionExplainer(
-            self.predictor.session, self.predictor.input_name
-        )
+        self.explainer = OcclusionExplainer(self.predictor.session, self.predictor.input_name)
         self.metriques = metriques if metriques is not None else charger_metriques()
         self.seuil_youden = float(self.metriques.get("seuil_youden", 0.5))
-        self.sensibilite = float(
-            self.metriques.get("sensibilite", {}).get("valeur", 0.9677)
-        )
-        self.specificite = float(
-            self.metriques.get("specificite", {}).get("valeur", 0.9541)
-        )
+        self.sensibilite = float(self.metriques.get("sensibilite", {}).get("valeur", 0.9677))
+        self.specificite = float(self.metriques.get("specificite", {}).get("valeur", 0.9541))
 
     def decodage(self, contenu: bytes) -> Image.Image:
         """Vérifie et décode un fichier image transmis par le client."""

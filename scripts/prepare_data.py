@@ -77,6 +77,7 @@ def export_examples(count_per_class: int = 6) -> None:
 
 
 def main() -> None:
+    """Extrait, audite et prépare le jeu NIH : découpage par lame et échantillon de démonstration."""
     parser = argparse.ArgumentParser(description="Préparation du jeu NIH malaria")
     parser.add_argument("--archive", type=Path, default=Path("/tmp/cell_images.zip"))
     args = parser.parse_args()

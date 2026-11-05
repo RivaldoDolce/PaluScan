@@ -53,4 +53,5 @@ class MalariaNet(nn.Module):
                     nn.init.zeros_(module.bias)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """Extraction de caractéristiques puis classification."""
         return self.classifier(self.features(x))

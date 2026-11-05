@@ -21,9 +21,7 @@ def wilson_interval(successes: int, total: int, z: float = 1.96) -> tuple[float,
     denominator = 1 + z**2 / total
     center = (proportion + z**2 / (2 * total)) / denominator
     margin = (
-        z
-        * math.sqrt(proportion * (1 - proportion) / total + z**2 / (4 * total**2))
-        / denominator
+        z * math.sqrt(proportion * (1 - proportion) / total + z**2 / (4 * total**2)) / denominator
     )
     return max(0.0, center - margin), min(1.0, center + margin)
 
@@ -53,9 +51,7 @@ def auc_mann_whitney(scores: np.ndarray, labels: np.ndarray) -> float:
     return float(u_pos / (n_pos * n_neg))
 
 
-def roc_curve(
-    scores: np.ndarray, labels: np.ndarray
-) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+def roc_curve(scores: np.ndarray, labels: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Courbe ROC exacte par balayage décroissant des scores observés."""
     scores = np.asarray(scores, dtype=float)
     labels = np.asarray(labels, dtype=int)
@@ -81,9 +77,7 @@ def roc_curve(
     return fpr, tpr, thresholds
 
 
-def pr_curve(
-    scores: np.ndarray, labels: np.ndarray
-) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+def pr_curve(scores: np.ndarray, labels: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Courbe précision-rappel exacte par balayage décroissant des scores."""
     scores = np.asarray(scores, dtype=float)
     labels = np.asarray(labels, dtype=int)
@@ -193,9 +187,7 @@ def youden_threshold(scores: np.ndarray, labels: np.ndarray) -> float:
     return float(thresholds[int(np.argmax(tpr - fpr))])
 
 
-def ppv_npv(
-    sensitivity: float, specificity: float, prevalence: float
-) -> tuple[float, float]:
+def ppv_npv(sensitivity: float, specificity: float, prevalence: float) -> tuple[float, float]:
     """Valeurs prédictives positive et négative par la formule de Bayes.
 
     Montre qu'un même test n'a pas la même valeur selon le contexte

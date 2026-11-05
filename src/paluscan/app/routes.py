@@ -7,7 +7,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 
 from . import views
-from .core import ErreurValidation, NOMBRE_MAX_IMAGES_LOT, get_moteur
+from .core import NOMBRE_MAX_IMAGES_LOT, ErreurValidation, get_moteur
 
 
 def _erreur(message: str, statut: int) -> JSONResponse:

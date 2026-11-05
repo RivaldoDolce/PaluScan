@@ -7,8 +7,6 @@ from xml.sax.saxutils import escape
 
 from fastcore.xml import NotStr
 
-from ..config import REPORTS_DIR
-
 EXEMPLES = [
     ("para_C59P20thinF_IMG_20150803_113430_cell_22.png", "Cellule parasitée"),
     ("para_C66P27N_ThinF_IMG_20150818_163419_cell_195.png", "Cellule parasitée"),
@@ -44,16 +42,16 @@ def _icon(trait: str, classe: str = "") -> NotStr:
 ICONE_MARQUE = '<circle cx="12" cy="12" r="8.2"/><path d="M8.4 13.6a4.6 4.6 0 0 0 7.2-1.4"/>'
 ICONE_DEPOT = '<path d="M12 15V4m0 0 4 4m-4-4L8 8"/><path d="M4.5 20h15"/>'
 ICONE_LOUPE = '<circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.4 15.4 4.2 4.2"/>'
-ICONE_ALERTE = (
-    '<path d="M12 9.2v3.8m0 3.6h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/>'
-)
+ICONE_ALERTE = '<path d="M12 9.2v3.8m0 3.6h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/>'
 ICONE_ŒIL = (
     '<path d="M2.2 12S5.8 5.6 12 5.6 21.8 12 21.8 12 18.2 18.4 12 18.4 2.2 12 2.2 12Z"/>'
     '<circle cx="12" cy="12" r="2.7"/>'
 )
 ICONE_BOUCLIER = '<path d="M12 3l7 2.8V11c0 4.5-3 8.5-7 10-4-1.5-7-5.5-7-10V5.8Z"/><path d="m9 11.6 2.1 2.1L15 9.5"/>'
 ICONE_SIGMA = '<path d="M17 5.5H7.4l5.2 6.5-5.2 6.5H17"/>'
-ICONE_CUBE = '<path d="M12 2.5 3.5 7v10l8.5 4.5L20.5 17V7Z"/><path d="m3.5 7 8.5 4.5L20.5 7M12 11.5v10"/>'
+ICONE_CUBE = (
+    '<path d="M12 2.5 3.5 7v10l8.5 4.5L20.5 17V7Z"/><path d="m3.5 7 8.5 4.5L20.5 7M12 11.5v10"/>'
+)
 ICONE_BASE = '<ellipse cx="12" cy="5.6" rx="7.4" ry="2.7"/><path d="M4.6 5.6v12.8c0 1.5 3.3 2.7 7.4 2.7s7.4-1.2 7.4-2.7V5.6M4.6 12c0 1.5 3.3 2.7 7.4 2.7s7.4-1.2 7.4-2.7"/>'
 ICONE_ERLEN = '<path d="M9.2 3h5.6M10.2 3v5.3L4.9 17a2.4 2.4 0 0 0 2.2 3.6h9.8a2.4 2.4 0 0 0 2.2-3.6L13.8 8.3V3"/>'
 ICONE_GRAPH = '<path d="M4 4.5v15h16"/><path d="m7 14 3.4-4.2 3 2.6L18.4 7"/>'
@@ -71,10 +69,10 @@ def _nav(active: str) -> str:
 def _pied() -> str:
     return (
         '<footer class="footer"><div class="container footer-inner">'
-        '<p>PaluScan — projet d\'étude de vision par ordinateur, sans visée diagnostique.</p>'
+        "<p>PaluScan — projet d'étude de vision par ordinateur, sans visée diagnostique.</p>"
         '<div class="footer-links"><a href="/demo">Démonstration</a><a href="/methode">Méthode</a>'
         '<a href="https://github.com" target="_blank" rel="noopener">Code source</a></div>'
-        '<p>Données : NIH / LSHTM · Licence CC BY 4.0</p>'
+        "<p>Données : NIH / LSHTM · Licence CC BY 4.0</p>"
         "</div></footer>"
     )
 
@@ -113,8 +111,8 @@ def _strip_chiffres(m: dict) -> str:
     ]
     corps = "".join(
         f'<div class="stat rise" style="--rise-delay:{i * 90}ms"><div class="stat-value">{v}</div>'
-        f'<div class="stat-label">{l}</div></div>'
-        for i, (v, l) in enumerate(valeurs)
+        f'<div class="stat-label">{libelle}</div></div>'
+        for i, (v, libelle) in enumerate(valeurs)
     )
     return f'<div class="container section"><div class="stats-strip">{corps}</div></div>'
 
@@ -140,6 +138,7 @@ def _page_base(titre: str, active: str, corps: str, metriques: dict) -> NotStr:
 
 
 def page_accueil(m: dict) -> NotStr:
+    """Page d'accueil : héros, chiffres clés, protocole, capacités et appel à l'action."""
     hero = f"""
 <section class="hero"><div class="container hero-grid">
   <div>
@@ -218,7 +217,7 @@ def page_accueil(m: dict) -> NotStr:
     </article>
   </div>
 </div></section>"""
-    cta = f"""
+    cta = """
 <section class="section"><div class="container">
   <div class="card card-glass tilt reveal" data-tilt style="text-align:center;padding-block:clamp(2.5rem,6vw,4rem)">
     <span class="glare"></span>
@@ -237,6 +236,7 @@ def page_accueil(m: dict) -> NotStr:
 
 
 def page_demo(m: dict) -> NotStr:
+    """Page de démonstration : zone de dépôt, exemples, gabarits de résultat et de lot."""
     vignettes = "".join(
         f'<img class="thumb" src="/static/img/exemples/{nom}" alt="{alt}" loading="lazy" '
         f'data-exemple width="58" height="58">'
@@ -333,8 +333,8 @@ def page_demo(m: dict) -> NotStr:
       <div class="ppv-cell neg"><div class="ppv-label">VPN · prédire sain</div><div class="ppv-value" data-champ="vpn">—</div></div>
     </div>
     <p class="ppv-note">Valeurs prédictives recalculées par la règle de Bayes à partir de la sensibilité
-    ({_pct(m.get('sensibilite', {}).get('valeur', 0.9677))}) et de la spécificité
-    ({_pct(m.get('specificite', {}).get('valeur', 0.9541))}) mesurées sur le jeu de test.</p>
+    ({_pct(m.get("sensibilite", {}).get("valeur", 0.9677))}) et de la spécificité
+    ({_pct(m.get("specificite", {}).get("valeur", 0.9541))}) mesurées sur le jeu de test.</p>
   </div>
 </template>"""
     modele_ligne = """
@@ -368,11 +368,18 @@ def _cadre(unites: list[tuple[float, str]] | None = None) -> str:
     return traits
 
 
-def _courbe(xs: list[float], ys: list[float], classe: str, couleur: str = "", delai: int = 0) -> str:
+def _courbe(
+    xs: list[float], ys: list[float], classe: str, couleur: str = "", delai: int = 0
+) -> str:
     points = " ".join(
-        f"{X0 + x * LARGEUR_PLOT:.1f},{Y0 + (1 - y) * HAUTEUR_PLOT:.1f}" for x, y in zip(xs, ys)
+        f"{X0 + x * LARGEUR_PLOT:.1f},{Y0 + (1 - y) * HAUTEUR_PLOT:.1f}"
+        for x, y in zip(xs, ys, strict=False)
     )
-    style = f' style="stroke:{couleur};animation-delay:{delai}ms"' if couleur else f' style="animation-delay:{delai}ms"'
+    style = (
+        f' style="stroke:{couleur};animation-delay:{delai}ms"'
+        if couleur
+        else f' style="animation-delay:{delai}ms"'
+    )
     return f'<polyline class="{classe}" points="{points}"{style}/>'
 
 
@@ -390,7 +397,11 @@ def _carte_roc(m: dict) -> str:
     roc = m["roc"]
     courbe = _courbe(roc["fpr"], roc["tpr"], "chart-line")
     diagonale = _courbe([0, 1], [0, 1], "chart-line alt")
-    return _svg("Courbe ROC", f"AUC {_fr(m['auc']['valeur'], 4)} · IC95 {_fr(m['auc']['ic95'][0], 3)}–{_fr(m['auc']['ic95'][1], 3)}", courbe + diagonale)
+    return _svg(
+        "Courbe ROC",
+        f"AUC {_fr(m['auc']['valeur'], 4)} · IC95 {_fr(m['auc']['ic95'][0], 3)}–{_fr(m['auc']['ic95'][1], 3)}",
+        courbe + diagonale,
+    )
 
 
 def _carte_pr(m: dict) -> str:
@@ -405,7 +416,7 @@ def _carte_calibration(m: dict) -> str:
     points = "".join(
         f'<circle cx="{X0 + c * LARGEUR_PLOT:.1f}" cy="{Y0 + (1 - o) * HAUTEUR_PLOT:.1f}" r="3.4" '
         f'fill="#f2545b" stroke="#07090f" stroke-width="1.4"/>'
-        for c, o in zip(cal["confiance"], cal["observe"])
+        for c, o in zip(cal["confiance"], cal["observe"], strict=False)
     )
     segment = _courbe(cal["confiance"], cal["observe"], "chart-line", delai=250)
     return _svg("Calibration", "Observé contre prédit (10 classes)", diagonale + segment + points)
@@ -417,12 +428,14 @@ def _carte_perte(m: dict) -> str:
     x_train = [i / (n - 1) for i in range(n)]
     y_max = max(max(e["perte_train"]), max(e["perte_val"])) * 1.08
     train = _courbe(x_train, [v / y_max for v in e["perte_train"]], "chart-line")
-    val = _courbe(x_train, [v / y_max for v in e["perte_val"]], "chart-line", couleur="#7db2ff", delai=200)
+    val = _courbe(
+        x_train, [v / y_max for v in e["perte_val"]], "chart-line", couleur="#7db2ff", delai=200
+    )
     legende = (
-        f'<span style="display:inline-flex;align-items:center;gap:0.4rem">'
-        f'<i style="width:14px;height:2.5px;background:var(--carmin)"></i>entraînement</span>'
-        f'<span style="display:inline-flex;align-items:center;gap:0.4rem">'
-        f'<i style="width:14px;height:2.5px;background:#7db2ff"></i>validation</span>'
+        '<span style="display:inline-flex;align-items:center;gap:0.4rem">'
+        '<i style="width:14px;height:2.5px;background:var(--carmin)"></i>entraînement</span>'
+        '<span style="display:inline-flex;align-items:center;gap:0.4rem">'
+        '<i style="width:14px;height:2.5px;background:#7db2ff"></i>validation</span>'
     )
     return f"""
 <div class="card chart-card">
@@ -435,15 +448,21 @@ def _carte_perte(m: dict) -> str:
 
 def _carte_confusion(m: dict) -> str:
     c = m["matrice_confusion"]
-    cell = lambda n, sous, classe: f'<div class="conf-cell {classe}"><span class="big">{n}</span><span class="sub">{sous}</span></div>'
+
+    def cellule(nombre: int, sous: str, classe: str) -> str:
+        return (
+            f'<div class="conf-cell {classe}"><span class="big">{nombre}</span>'
+            f'<span class="sub">{sous}</span></div>'
+        )
+
     entete = '<div></div><div class="conf-head">Prédit · infecté</div><div class="conf-head">Prédit · sain</div>'
     return f"""
 <div class="card chart-card">
-  <div class="chart-title"><h3>Matrice de confusion</h3><span>Seuil de Youden {_fr(m['seuil_youden'], 4)}</span></div>
+  <div class="chart-title"><h3>Matrice de confusion</h3><span>Seuil de Youden {_fr(m["seuil_youden"], 4)}</span></div>
   <div class="conf-grid">
     {entete}
-    <div class="conf-side">Réel · infecté</div>{cell(c['vp'], 'vrais positifs', 'conf-tp')}{cell(c['fn'], 'faux négatifs', 'conf-fn')}
-    <div class="conf-side">Réel · sain</div>{cell(c['fp'], 'faux positifs', 'conf-fp')}{cell(c['vn'], 'vrais négatifs', 'conf-tn')}
+    <div class="conf-side">Réel · infecté</div>{cellule(c["vp"], "vrais positifs", "conf-tp")}{cellule(c["fn"], "faux négatifs", "conf-fn")}
+    <div class="conf-side">Réel · sain</div>{cellule(c["fp"], "faux positifs", "conf-fp")}{cellule(c["vn"], "vrais négatifs", "conf-tn")}
   </div>
 </div>"""
 
@@ -451,12 +470,16 @@ def _carte_confusion(m: dict) -> str:
 def _carte_intervalles(m: dict) -> str:
     lignes = ""
     for i, (nom, cle) in enumerate(
-        [("Exactitude", "exactitude"), ("Sensibilité", "sensibilite"), ("Spécificité", "specificite")]
+        [
+            ("Exactitude", "exactitude"),
+            ("Sensibilité", "sensibilite"),
+            ("Spécificité", "specificite"),
+        ]
     ):
         v = m[cle]
         gauche, droite = v["ic95"]
-        band = f'left:{gauche * 100:.1f}%;width:{(droite - gauche) * 100:.1f}%;animation-delay:{i * 120}ms'
-        dot = f'left:{v["valeur"] * 100:.1f}%'
+        band = f"left:{gauche * 100:.1f}%;width:{(droite - gauche) * 100:.1f}%;animation-delay:{i * 120}ms"
+        dot = f"left:{v['valeur'] * 100:.1f}%"
         lignes += (
             f'<div class="ci-row"><span>{nom}</span>'
             f'<span class="ci-track"><span class="ci-band" style="{band}"></span>'
@@ -465,7 +488,7 @@ def _carte_intervalles(m: dict) -> str:
         )
     return f"""
 <div class="card chart-card">
-  <div class="chart-title"><h3>Intervalles de confiance à 95{ESP}%</h3><span>{_ent(m['n_test'])} cellules · {m['n_test_slides']} lames</span></div>
+  <div class="chart-title"><h3>Intervalles de confiance à 95{ESP}%</h3><span>{_ent(m["n_test"])} cellules · {m["n_test_slides"]} lames</span></div>
   {lignes}
 </div>"""
 
@@ -473,21 +496,24 @@ def _carte_intervalles(m: dict) -> str:
 def _carte_baseline(m: dict) -> str:
     b = m["baseline"]
     mc = m["mcnemar"]
-    barre = lambda v, couleur, delai: (
-        f'<div class="prob-track" style="margin-top:0.45rem"><div class="prob-fill" '
-        f'style="width:{v * 100:.1f}%;background:{couleur};transition-delay:{delai}ms"></div></div>'
-    )
+
+    def barre(valeur: float, couleur: str, delai: int) -> str:
+        return (
+            f'<div class="prob-track" style="margin-top:0.45rem"><div class="prob-fill" '
+            f'style="width:{valeur * 100:.1f}%;background:{couleur};transition-delay:{delai}ms"></div></div>'
+        )
+
     return f"""
 <div class="card chart-card">
   <div class="chart-title"><h3>Contre la baseline</h3><span>Test de McNemar</span></div>
   <div style="font-size:0.88rem">
-    <div class="prob-head" style="display:flex;justify-content:space-between"><span>MalariaNet (CNN)</span><strong>AUC {_fr(m['auc']['valeur'], 4)}</strong></div>
-    {barre(m['auc']['valeur'], 'linear-gradient(90deg,#b3282f,var(--carmin))', 100)}
-    <div class="prob-head" style="display:flex;justify-content:space-between;margin-top:1rem"><span>{escape(b['nom'])}</span><strong>AUC {_fr(b['auc'], 4)}</strong></div>
-    {barre(b['auc'], 'rgba(255,255,255,0.22)', 250)}
+    <div class="prob-head" style="display:flex;justify-content:space-between"><span>MalariaNet (CNN)</span><strong>AUC {_fr(m["auc"]["valeur"], 4)}</strong></div>
+    {barre(m["auc"]["valeur"], "linear-gradient(90deg,#b3282f,var(--carmin))", 100)}
+    <div class="prob-head" style="display:flex;justify-content:space-between;margin-top:1rem"><span>{escape(b["nom"])}</span><strong>AUC {_fr(b["auc"], 4)}</strong></div>
+    {barre(b["auc"], "rgba(255,255,255,0.22)", 250)}
   </div>
-  <p class="ppv-note">Sur les {_ent(mc['n_discordantes'])} cellules tranchées différemment, la baseline se trompe seule
-  {_ent(mc['b_base_seulement'])} fois contre {_ent(mc['c_cnn_seulement'])} pour le CNN (p &lt; 0,001)&nbsp;: l'écart est
+  <p class="ppv-note">Sur les {_ent(mc["n_discordantes"])} cellules tranchées différemment, la baseline se trompe seule
+  {_ent(mc["b_base_seulement"])} fois contre {_ent(mc["c_cnn_seulement"])} pour le CNN (p &lt; 0,001)&nbsp;: l'écart est
   significatif, pas un artefact d'échantillonnage.</p>
 </div>"""
 
@@ -498,6 +524,7 @@ def _ent(v: int) -> str:
 
 
 def page_methode(m: dict) -> NotStr:
+    """Page méthode : tableau de bord graphique, prose rédigée et chronologie."""
     dashboard = f"""
 <section class="section" style="padding-top:0"><div class="container">
   <div class="section-head reveal">
@@ -529,7 +556,7 @@ def page_methode(m: dict) -> NotStr:
   donc des jumelles du jeu d'entraînement dans le jeu de test et gonfle artificiellement toutes les
   métriques. PaluScan découpe <strong>par lame</strong>&nbsp;: 212 lames de test entières, jamais vues
   pendant l'apprentissage. La baseline (PCA à 50 composantes + régression logistique) évaluée sur le
-  même protocole plafonne à une AUC de {_fr(m['baseline']['auc'], 4)} — contre {_fr(m['auc']['valeur'], 4)} pour MalariaNet.</p>
+  même protocole plafonne à une AUC de {_fr(m["baseline"]["auc"], 4)} — contre {_fr(m["auc"]["valeur"], 4)} pour MalariaNet.</p>
   <h2 class="reveal">Le modèle&nbsp;: MalariaNet</h2>
   <p class="reveal">Trois blocs convolutifs (32, 64, 128 canaux) avec normalisation par lot et MaxPool,
   suivi d'une tête dense avec décrochage. Le réseau ne compte que 62&nbsp;000 paramètres&nbsp;: il tient
@@ -538,7 +565,7 @@ def page_methode(m: dict) -> NotStr:
   avec arrêt anticipé sur la perte de validation (16 époques au final).</p>
   <h2 class="reveal">La statistique, sans boîte noire</h2>
   <p class="reveal">Le seuil de décision n'est pas 0,5 par défaut mais celui de Youden
-  ({_fr(m['seuil_youden'], 4)}), qui maximise sensibilité + spécificité − 1 sur le jeu de validation.
+  ({_fr(m["seuil_youden"], 4)}), qui maximise sensibilité + spécificité − 1 sur le jeu de validation.
   Les intervalles binomiaux exacts sont remplacés par l'approximation de Wilson, robuste aux petits
   effectifs&nbsp;; l'AUC et son IC95 proviennent d'un bootstrap à 10&nbsp;000 rééchantillonnages
   stratifiés par lame. Le test de McNemar apparié vérifie que l'écart avec la baseline est
@@ -579,4 +606,3 @@ def page_methode(m: dict) -> NotStr:
 </div></section>"""
     corps = dashboard + prose + chronologie
     return _page_base("Méthode & résultats — PaluScan", "methode", corps, m)
-

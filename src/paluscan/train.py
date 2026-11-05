@@ -20,7 +20,9 @@ from .model import MalariaNet
 from .stats import auc_mann_whitney
 
 
-def evaluate_model(model: MalariaNet, loader: DataLoader) -> tuple[float, float, float, np.ndarray, np.ndarray]:
+def evaluate_model(
+    model: MalariaNet, loader: DataLoader
+) -> tuple[float, float, float, np.ndarray, np.ndarray]:
     """Renvoie perte, exactitude, AUC, scores et étiquettes sur un lot de validation."""
     criterion = torch.nn.CrossEntropyLoss()
     model.eval()
@@ -46,9 +48,13 @@ def train(args: argparse.Namespace) -> None:
 
     records = discover(RAW_DIR)
     train_rec, val_rec, test_rec = grouped_split(records)
-    print(f"Cellules — entraînement {len(train_rec)}, validation {len(val_rec)}, test {len(test_rec)}")
-    print(f"Lames — entraînement {len({r.slide for r in train_rec})}, "
-          f"validation {len({r.slide for r in val_rec})}, test {len({r.slide for r in test_rec})}")
+    print(
+        f"Cellules — entraînement {len(train_rec)}, validation {len(val_rec)}, test {len(test_rec)}"
+    )
+    print(
+        f"Lames — entraînement {len({r.slide for r in train_rec})}, "
+        f"validation {len({r.slide for r in val_rec})}, test {len({r.slide for r in test_rec})}"
+    )
 
     if args.max_train and len(train_rec) > args.max_train:
         rng = np.random.default_rng(SEED)
@@ -117,7 +123,9 @@ def train(args: argparse.Namespace) -> None:
         if val_auc > best_auc:
             best_auc = val_auc
             patience_left = args.patience
-            torch.save({"state_dict": model.state_dict(), "epoch": epoch, "val_auc": val_auc}, TORCH_PATH)
+            torch.save(
+                {"state_dict": model.state_dict(), "epoch": epoch, "val_auc": val_auc}, TORCH_PATH
+            )
             print(f"    meilleur point sauvegardé (AUC {val_auc:.4f})")
         else:
             patience_left -= 1
@@ -131,13 +139,18 @@ def train(args: argparse.Namespace) -> None:
 
 
 def parse_args() -> argparse.Namespace:
+    """Lit les hyperparamètres d'entraînement depuis la ligne de commande."""
     parser = argparse.ArgumentParser(description="Entraînement de PaluScan")
     parser.add_argument("--epochs", type=int, default=12)
     parser.add_argument("--batch-size", type=int, default=64)
     parser.add_argument("--lr", type=float, default=1e-3)
     parser.add_argument("--patience", type=int, default=4)
-    parser.add_argument("--max-train", type=int, default=0, help="plafonne le nombre de cellules d'entraînement")
-    parser.add_argument("--resume", action="store_true", help="reprend depuis le meilleur point sauvegardé")
+    parser.add_argument(
+        "--max-train", type=int, default=0, help="plafonne le nombre de cellules d'entraînement"
+    )
+    parser.add_argument(
+        "--resume", action="store_true", help="reprend depuis le meilleur point sauvegardé"
+    )
     return parser.parse_args()
 
 
