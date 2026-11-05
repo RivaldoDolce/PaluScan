@@ -52,7 +52,8 @@ class OcclusionExplainer:
             acc /= acc.max()
         return acc
 
-    def overlay(self, image: Image.Image, map_array: np.ndarray, alpha: float = 0.45) -> Image.Image:
+    @staticmethod
+    def overlay(image: Image.Image, map_array: np.ndarray, alpha: float = 0.45) -> Image.Image:
         """Superpose la carte de chaleur à l'image d'origine (échelle 150 px)."""
         base = image.convert("RGB").resize((IMG_SIZE * 2, IMG_SIZE * 2), Image.BILINEAR)
         resized = Image.fromarray((map_array * 255).astype(np.uint8)).resize(base.size, Image.BILINEAR)
