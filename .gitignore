@@ -1,0 +1,21 @@
+# Artefacts d'entraînement
+runs/
+*.pt
+!models/paluscan.onnx
+
+# Données (voir data/README.md pour la récupération)
+data/cell_images/
+data/sample/
+
+# Rapports générés, hors métriques versionnées
+reports/figures/
+
+# Environnement et outillage
+.venv/
+__pycache__/
+*.pyc
+.ruff_cache/
+.pytest_cache/
+
+# Système
+.DS_Store
