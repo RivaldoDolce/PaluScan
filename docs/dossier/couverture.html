@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    @page { size: 794px 1123px; margin: 0; }
+    :root {
+      --c-bg: #0a1628;
+      --c-accent: #4da8da;
+      --c-text: #e8f0f8;
+      --c-muted: #7a9bb8;
+      --c-glow: #2d7ab3;
+    }
+    html, body {
+      margin: 0; padding: 0;
+      width: 794px; height: 1123px;
+      background: var(--c-bg);
+      color: var(--c-text);
+      font-family: 'Inter', sans-serif;
+    }
+    @media screen {
+      html { height: auto; display: flex; justify-content: center; min-height: 100vh; background: var(--c-bg); }
+      body { transform-origin: top center; scale: min(1, calc(100vw / 794), calc(100vh / 1123)); margin: 0 auto; box-shadow: 0 0 60px rgba(0,0,0,0.3); }
+    }
+    .cover { width: 794px; height: 1123px; position: relative; border: none; outline: none; box-shadow: none; }
+
+    /* Couche 1 : halos décoratifs, clippés */
+    .halo-fond { position: absolute; inset: 0; overflow: hidden; z-index: 1; }
+    .halo-fond .halo-1 {
+      position: absolute; top: -140px; left: -120px; width: 520px; height: 520px;
+      background: radial-gradient(circle, rgba(45, 122, 179, 0.16) 0%, rgba(45, 122, 179, 0) 62%);
+    }
+    .halo-fond .halo-2 {
+      position: absolute; bottom: -160px; right: -140px; width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(45, 122, 179, 0.13) 0%, rgba(45, 122, 179, 0) 60%);
+    }
+    .halo-fond .grille {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(77, 168, 218, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(77, 168, 218, 0.05) 1px, transparent 1px);
+      background-size: 56px 56px;
+    }
+
+    /* Couche 2 : cadre lumineux */
+    .cadre { position: absolute; top: 80px; bottom: 80px; left: 60px; right: 60px; border: 2px solid var(--c-accent); z-index: 2; }
+
+    /* Couche 3 : contenu */
+    .contenu { position: absolute; inset: 0; z-index: 3; }
+    .kicker {
+      position: absolute; left: 110px; top: 135px; right: 110px;
+      font-size: 11pt; font-weight: 300; letter-spacing: 5px;
+      text-transform: uppercase; color: var(--c-accent);
+    }
+    .titre {
+      position: absolute; left: 110px; top: 236px; max-width: 560px;
+      font-family: 'Playfair Display', serif; font-weight: 900;
+      font-size: 58pt; line-height: 1.12; color: var(--c-text);
+      text-shadow: 0 0 34px rgba(77, 168, 218, 0.35);
+    }
+    .sous-titre {
+      position: absolute; left: 110px; top: 388px; max-width: 540px;
+      font-size: 19pt; font-weight: 300; line-height: 1.35; color: var(--c-text);
+      opacity: 0.92;
+    }
+    .resume {
+      position: absolute; left: 110px; top: 512px; max-width: 520px;
+      font-size: 13.5pt; font-weight: 400; line-height: 1.7; color: var(--c-muted);
+    }
+    .meta {
+      position: absolute; left: 110px; top: 726px;
+    }
+    .meta .ligne1 { font-size: 16pt; font-weight: 500; color: var(--c-text); }
+    .meta .ligne2 { font-size: 12pt; font-weight: 400; color: var(--c-muted); margin-top: 10px; }
+    .chiffres {
+      position: absolute; left: 110px; top: 856px; right: 110px;
+      display: flex; gap: 44px;
+    }
+    .chiffres .bloc { flex: 0 0 auto; }
+    .chiffres .valeur {
+      font-family: 'Playfair Display', serif; font-size: 23pt; font-weight: 700;
+      color: var(--c-accent);
+    }
+    .chiffres .libelle {
+      font-size: 8.5pt; letter-spacing: 2px; text-transform: uppercase;
+      color: var(--c-muted); margin-top: 5px;
+    }
+    .date {
+      position: absolute; left: 110px; bottom: 128px;
+      font-size: 10pt; font-weight: 400; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--c-muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="cover">
+    <div class="halo-fond">
+      <div class="grille"></div>
+      <div class="halo-1"></div>
+      <div class="halo-2"></div>
+    </div>
+    <div class="cadre"></div>
+    <div class="contenu">
+      <div class="kicker">Dossier de candidature · Master Machine Learning &amp; IA</div>
+      <div class="titre">PaluScan</div>
+      <div class="sous-titre">Détection du paludisme sur frottis sanguins par vision par ordinateur</div>
+      <div class="resume">
+        De la donnée publique au produit déployé : un réseau convolutif léger entraîné
+        dans les règles de l'art — découpage par lame, statistique inférentielle,
+        explicabilité par occlusion — et une application web interactive de démonstration.
+      </div>
+      <div class="meta">
+        <div class="ligne1">Projet individuel de recherche appliquée</div>
+        <div class="ligne2">Conçu, entraîné, évalué et déployé en un mois · Python, PyTorch, ONNXRuntime, FastHTML</div>
+      </div>
+      <div class="chiffres">
+        <div class="bloc"><div class="valeur">0,9914</div><div class="libelle">AUC ROC · test</div></div>
+        <div class="bloc"><div class="valeur">96,8&nbsp;%</div><div class="libelle">Sensibilité</div></div>
+        <div class="bloc"><div class="valeur">27 558</div><div class="libelle">Cellules · 1 408 lames</div></div>
+        <div class="bloc"><div class="valeur">&lt; 10 ms</div><div class="libelle">Inférence CPU</div></div>
+      </div>
+      <div class="date">Janvier 2026</div>
+    </div>
+  </div>
+</body>
+</html>

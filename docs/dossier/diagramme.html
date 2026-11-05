@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    width: 1180px;
+    background: #ffffff;
+    font-family: "DejaVu Sans", "Noto Sans SC", sans-serif;
+    color: #142840;
+    padding: 26px 30px;
+  }
+  .colonne {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 26px;
+    align-items: stretch;
+  }
+  .groupe {
+    border: 1.5px solid #c0d0e2;
+    border-radius: 12px;
+    padding: 16px 14px;
+    background: #f8fbfe;
+  }
+  .groupe h2 {
+    font-size: 15px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #1a4a7a;
+    text-align: center;
+    margin-bottom: 14px;
+  }
+  .groupe h2 span { color: #2d7ab3; }
+  .noeud {
+    border: 1.5px solid #c0d0e2;
+    border-radius: 9px;
+    background: #ffffff;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+  }
+  .noeud:last-child { margin-bottom: 0; }
+  .noeud b { display: block; font-size: 13.5px; color: #142840; }
+  .noeud i { font-style: normal; font-size: 11px; color: #5a7a96; line-height: 1.45; display: block; margin-top: 2px; }
+  .fichier { font-family: "DejaVu Sans Mono", monospace; font-size: 10.5px; color: #2d7ab3; }
+  .fleches {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 26px;
+    height: 34px;
+    position: relative;
+  }
+  .fleche {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .fleche svg { display: block; }
+  .ligne-bas {
+    margin-top: 24px;
+    border: 1.5px dashed #c0d0e2;
+    border-radius: 12px;
+    padding: 13px 16px;
+    background: #f5f8fc;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .ligne-bas .etape {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12.5px;
+    color: #1a4a7a;
+    font-weight: bold;
+  }
+  .ligne-bas .sep { color: #5a7a96; font-weight: normal; }
+  .titre-canal {
+    text-align: center;
+    font-size: 11.5px;
+    color: #5a7a96;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+</style>
+</head>
+<body>
+  <div class="titre-canal">Chaîne d'entraînement</div>
+  <div class="colonne">
+    <div class="groupe">
+      <h2><span>01 ·</span> Données</h2>
+      <div class="noeud"><b>Corpus NIH / LSHTM</b><i>27 558 cellules 64×64, deux classes</i></div>
+      <div class="noeud"><b>Indexation par lame</b><i><span class="fichier">data.py · slide_id()</span></i></div>
+      <div class="noeud"><b>Découpage groupé 70/15/15</b><i>par lame, semé (42)</i></div>
+    </div>
+    <div class="groupe">
+      <h2><span>02 ·</span> Apprentissage</h2>
+      <div class="noeud"><b>Augmentation</b><i>rotations, miroirs, luminosité</i><span class="fichier">dataset.py</span></div>
+      <div class="noeud"><b>MalariaNet</b><i>conv 32/64/128 + tête dense, 62 k paramètres</i><span class="fichier">model.py</span></div>
+      <div class="noeud"><b>Arrêt anticipé</b><i>patience sur la perte de validation</i><span class="fichier">train.py</span></div>
+    </div>
+    <div class="groupe">
+      <h2><span>03 ·</span> Évaluation</h2>
+      <div class="noeud"><b>Métriques et IC95</b><i>Wilson, bootstrap stratifié par lame</i><span class="fichier">stats.py</span></div>
+      <div class="noeud"><b>McNemar contre baseline</b><i>PCA(50) + régression logistique</i></div>
+      <div class="noeud"><b>Rapport JSON</b><i><span class="fichier">reports/metrics.json</span></i><span class="fichier">evaluate.py</span></div>
+    </div>
+  </div>
+  <div class="fleches">
+    <div class="fleche"><svg width="340" height="24"><line x1="0" y1="12" x2="326" y2="12" stroke="#2d7ab3" stroke-width="1.6"/><polygon points="326,6 340,12 326,18" fill="#2d7ab3"/></svg></div>
+    <div class="fleche"><svg width="340" height="24"><line x1="0" y1="12" x2="326" y2="12" stroke="#2d7ab3" stroke-width="1.6"/><polygon points="326,6 340,12 326,18" fill="#2d7ab3"/></svg></div>
+  </div>
+  <div class="titre-canal">Chaîne d'inférence (conteneur de démonstration)</div>
+  <div class="ligne-bas">
+    <div class="etape">Image cellulaire <span class="sep">→</span></div>
+    <div class="etape">API FastHTML <span class="sep">→</span> <i style="font-style:normal;font-weight:normal;color:#5a7a96">routes.py</i></div>
+    <div class="etape">Prétraitement <span class="sep">→</span> <i style="font-style:normal;font-weight:normal;color:#5a7a96">predict.py</i></div>
+    <div class="etape">ONNXRuntime CPU &lt; 10 ms <span class="sep">→</span> <i style="font-style:normal;font-weight:normal;color:#5a7a96">paluscan.onnx</i></div>
+    <div class="etape">Décision (Youden 0,4875) + carte d'occlusion <span class="sep">→</span> <i style="font-style:normal;font-weight:normal;color:#5a7a96">explain.py</i></div>
+    <div class="etape">Rendu HTML</div>
+  </div>
+</body>
+</html>
