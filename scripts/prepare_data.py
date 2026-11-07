@@ -62,7 +62,7 @@ def export_examples(count_per_class: int = 6) -> None:
     """Copie quelques cellules du lot de test comme exemples d'analyse."""
     _, _, test = grouped_split(discover(RAW_DIR))
     rng = np.random.default_rng(7)
-    examples = ROOT / "src" / "paluscan" / "app" / "static" / "img" / "examples"
+    examples = ROOT / "src" / "paluscan" / "app" / "static" / "img" / "exemples"
     examples.mkdir(parents=True, exist_ok=True)
     chosen: list[tuple[str, Path]] = []
     for label, name in enumerate(CLASSES):
