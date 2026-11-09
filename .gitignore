@@ -22,3 +22,6 @@ __pycache__/
 
 # Artefact de session du sandbox
 .sesskey
+
+# Archive locale des modifications
+paluscan-modifications/
