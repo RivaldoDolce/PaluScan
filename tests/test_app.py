@@ -1,4 +1,4 @@
-"""Application FastHTML : pages, API d'inférence et gestion d'erreurs."""
+"""Application FastHTML : pages, API d'inférence, garde-fou et gestion d'erreurs."""
 
 import io
 from pathlib import Path
@@ -11,7 +11,7 @@ from paluscan.app import create_app
 
 EXEMPLE_PARASITE = (
     Path(__file__).resolve().parents[1]
-    / "src/paluscan/app/static/img/exemples/para_C59P20thinF_IMG_20150803_113430_cell_22.png"
+    / "src/paluscan/app/static/img/exemples/para_C182P143NThinF_IMG_20151201_171836_cell_172.png"
 )
 EXEMPLE_SAIN = (
     Path(__file__).resolve().parents[1]
@@ -33,9 +33,9 @@ def _fichier_png(couleur=(150, 60, 80), taille=(64, 64)) -> bytes:
 
 def test_pages_servees(client):
     for route, extrait in [
-        ("/", "L'IA qui lit un frottis sanguin"),
+        ("/", "Lire un frottis sanguin"),
         ("/demo", "Laboratoire interactif"),
-        ("/methode", "Ce que dit le jeu de test"),
+        ("/methode", "Le garde-fou d'entrée"),
     ]:
         reponse = client.get(route)
         assert reponse.status_code == 200
@@ -47,6 +47,7 @@ def test_statiques_servees(client):
     assert client.get("/static/css/style.css").status_code == 200
     assert client.get("/static/js/app.js").status_code == 200
     assert client.get("/static/img/favicon.svg").status_code == 200
+    assert "IBM Plex" in client.get("/static/css/style.css").text
 
 
 def test_analyser_image_parasitee(client):

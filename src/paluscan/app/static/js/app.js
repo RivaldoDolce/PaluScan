@@ -1,4 +1,4 @@
-/* PaluScan — interactions : révélation, inclinaison 3D, laboratoire d'analyse. */
+/* PaluScan — interactions : apparitions, planche d'observation, laboratoire d'analyse. */
 
 const REDUIT_MOUVEMENT = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const SEUIL_CHARGEMENT = 0.18;
@@ -13,19 +13,16 @@ const $ = (selecteur, racine = document) => racine.querySelector(selecteur);
 const $$ = (selecteur, racine = document) => [...racine.querySelectorAll(selecteur)];
 
 function animerCompteur(el, cible, decimales, suffixe = "") {
-  if (REDUIT_MOUVEMENT) {
-    el.textContent = new Intl.NumberFormat("fr-FR", {
-      minimumFractionDigits: decimales,
-      maximumFractionDigits: decimales,
-    }).format(cible) + suffixe;
-    return;
-  }
-  const debut = performance.now();
-  const duree = 1100;
   const nf = new Intl.NumberFormat("fr-FR", {
     minimumFractionDigits: decimales,
     maximumFractionDigits: decimales,
   });
+  if (REDUIT_MOUVEMENT) {
+    el.textContent = nf.format(cible) + suffixe;
+    return;
+  }
+  const debut = performance.now();
+  const duree = 900;
   const pas = (maintenant) => {
     const t = Math.min((maintenant - debut) / duree, 1);
     const easing = 1 - Math.pow(1 - t, 3);
@@ -58,31 +55,20 @@ function observerRevelation() {
   $$(".reveal, .stats-strip .stat").forEach((el) => observateur.observe(el));
 }
 
-function activerInclinaison() {
-  if (REDUIT_MOUVEMENT || !matchMedia("(pointer: fine)").matches) return;
-  $$("[data-tilt]").forEach((carte) => {
-    let raf = null;
-    const bouger = (evenement) => {
-      const rect = carte.getBoundingClientRect();
-      const x = (evenement.clientX - rect.left) / rect.width;
-      const y = (evenement.clientY - rect.top) / rect.height;
-      if (raf) return;
-      raf = requestAnimationFrame(() => {
-        carte.classList.add("is-engaged");
-        carte.style.transform = `perspective(900px) rotateX(${(0.5 - y) * 7}deg) rotateY(${(x - 0.5) * 9}deg) translateZ(6px)`;
-        carte.style.setProperty("--gx", `${x * 100}%`);
-        carte.style.setProperty("--gy", `${y * 100}%`);
-        raf = null;
-      });
-    };
-    const sortir = () => {
-      if (raf) cancelAnimationFrame(raf);
-      raf = null;
-      carte.classList.remove("is-engaged");
-      carte.style.transform = "";
-    };
-    carte.addEventListener("pointermove", bouger);
-    carte.addEventListener("pointerleave", sortir);
+function installerPlanche() {
+  const etiquette = $("#etiquette-planche");
+  if (!etiquette) return;
+  const defaut = etiquette.textContent;
+  const cellules = $$(".planche-cellule");
+  for (const cellule of cellules) {
+    cellule.addEventListener("mouseenter", () => {
+      cellules.forEach((c) => c.classList.remove("is-cible"));
+      cellule.classList.add("is-cible");
+      etiquette.textContent = `${cellule.dataset.libelle} · lame ${cellule.dataset.lame}`;
+    });
+  }
+  $(".planche-grille").addEventListener("mouseleave", () => {
+    etiquette.textContent = defaut;
   });
 }
 
@@ -95,14 +81,18 @@ function afficherToast(message) {
   requestAnimationFrame(() => toast.classList.add("is-visible"));
   setTimeout(() => {
     toast.classList.remove("is-visible");
-    setTimeout(() => toast.remove(), 400);
+    setTimeout(() => toast.remove(), 300);
   }, 4200);
 }
 
 async function posterAnalyse(corps, itineraire) {
   const reponse = await fetch(itineraire, { method: "POST", body: corps });
   const charge = await reponse.json();
-  if (!reponse.ok) throw new Error(charge.erreur || "Erreur serveur.");
+  if (!reponse.ok) {
+    const erreur = new Error(charge.erreur || "Erreur serveur.");
+    erreur.motifs = charge.motifs || [];
+    throw erreur;
+  }
   return charge;
 }
 
@@ -117,12 +107,24 @@ const sectionLot = $("#section-lot");
 function afficherAnalyseEnCours(urlApercu) {
   const modele = $("#modele-resultat");
   zoneResultat.replaceChildren(modele.content.cloneNode(true));
-  const apercu = $("[data-champ=apercu]", zoneResultat);
-  apercu.src = urlApercu;
+  $("[data-champ=apercu]", zoneResultat).src = urlApercu;
   return {
     noeud: zoneResultat,
     conteneur: $("[data-champ=conteneur-visual]", zoneResultat),
   };
+}
+
+function afficherRefus(urlApercu, erreur) {
+  const modele = $("#modele-refus");
+  zoneResultat.replaceChildren(modele.content.cloneNode(true));
+  $("[data-champ=refus-apercu]", zoneResultat).src = urlApercu;
+  $("[data-champ=refus-message]", zoneResultat).textContent = erreur.message;
+  const motifs = $("[data-champ=refus-motifs]", zoneResultat);
+  for (const motif of erreur.motifs) {
+    const li = document.createElement("li");
+    li.textContent = motif;
+    motifs.appendChild(li);
+  }
 }
 
 function installerBasculeCarte(noeud) {
@@ -165,10 +167,14 @@ async function analyserUnique(fichier) {
     const r = await posterAnalyse(corps, "/api/analyser");
     remplirResultat(etat, r);
   } catch (erreur) {
-    afficherVide();
-    afficherToast(erreur.message);
+    if (erreur.motifs && erreur.motifs.length > 0) {
+      afficherRefus(urlApercu, erreur);
+    } else {
+      afficherVide();
+      afficherToast(erreur.message);
+    }
   } finally {
-    etat.conteneur.classList.remove("is-scanning");
+    etat.conteneur.classList.remove("is-scan");
   }
 }
 
@@ -176,34 +182,30 @@ function remplirResultat(etat, r) {
   const noeud = etat.noeud;
   const infectee = r.infectee;
   const verdict = $("[data-champ=verdict]", noeud);
-  verdict.classList.toggle("verdict-infected", infectee);
-  verdict.classList.toggle("verdict-healthy", !infectee);
+  verdict.classList.toggle("verdict-infectee", infectee);
+  verdict.classList.toggle("verdict-saine", !infectee);
   $("[data-champ=verdict-libelle]", noeud).textContent = infectee
     ? "Cellule parasitée détectée"
     : "Cellule saine";
 
   const pourcentage = $("[data-champ=pourcentage]", noeud);
-  const cercle = $(".gauge-fill", noeud);
+  const cercle = $(".jauge-valeur", noeud);
   const circonference = 2 * Math.PI * 76;
   const cible = r.probabilite_infection;
   pourcentage.textContent = fmtPct.format(cible * 100);
   requestAnimationFrame(() => {
     cercle.style.strokeDashoffset = String(circonference * (1 - cible));
   });
-  animerCompteur(pourcentage, cible * 100, 1, "\u202f%");
 
-  const pInfectee = $("[data-champ=p-infectee]", noeud);
-  const pSain = $("[data-champ=p-sain]", noeud);
-  pInfectee.textContent = `${fmtPct.format(cible * 100)}\u202f%`;
-  pSain.textContent = `${fmtPct.format(r.probabilite_sain * 100)}\u202f%`;
+  $("[data-champ=p-infectee]", noeud).textContent = `${fmtPct.format(cible * 100)}\u202f%`;
+  $("[data-champ=p-sain]", noeud).textContent = `${fmtPct.format(r.probabilite_sain * 100)}\u202f%`;
   $("[data-champ=barre-infectee]", noeud).style.width = `${cible * 100}%`;
   $("[data-champ=barre-sain]", noeud).style.width = `${r.probabilite_sain * 100}%`;
 
-  $("[data-champ=meta-latence]", noeud).textContent = `Latence ${fmtMs.format(r.latence_ms)} ms`;
-  $("[data-champ=meta-seuil]", noeud).textContent = `Seuil de Youden ${fmt.format(r.seuil_youden)}`;
+  $("[data-champ=meta-latence]", noeud).textContent = `latence ${fmtMs.format(r.latence_ms)} ms`;
+  $("[data-champ=meta-seuil]", noeud).textContent = `seuil de Youden ${fmt.format(r.seuil_youden)}`;
 
-  const carte = $("[data-champ=carte]", noeud);
-  carte.src = r.carte;
+  $("[data-champ=carte]", noeud).src = r.carte;
   installerBasculeCarte(noeud);
   installerCurseurPrevalence(noeud);
 }
@@ -212,9 +214,9 @@ function afficherVide() {
   const div = document.createElement("div");
   div.className = "result-empty";
   div.innerHTML =
-    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.4 15.4 4.2 4.2"/></svg>' +
-    '<p>L\'analyse apparaîtra ici.</p>' +
-    '<p style="font-size:0.85rem;margin-top:0.4rem">Importez une image ou choisissez un exemple.</p>';
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.4 15.4 4.2 4.2"/></svg>' +
+    "<p>L'analyse apparaîtra ici</p>" +
+    '<p class="result-empty-detail">Importez une image ou choisissez un exemple</p>';
   zoneResultat.replaceChildren(div);
 }
 
@@ -229,13 +231,30 @@ async function analyserLot(fichiers) {
     resultats.forEach((r, i) => {
       const ligne = $("#modele-ligne-lot").content.cloneNode(true);
       const nom = fichiers[i].name;
-      $(".cell-mini", ligne).src = urls.get(nom);
-      $(".cell-mini", ligne).alt = nom;
+      const vignette = $(".cell-mini", ligne);
+      vignette.src = urls.get(nom);
+      vignette.alt = nom;
       const etiquette = $(".tag", ligne);
-      etiquette.className = r.infectee ? "tag tag-pos" : "tag tag-neg";
-      etiquette.textContent = r.infectee ? "Parasitée" : "Saine";
-      ligne.querySelectorAll("td")[2].textContent = `${fmtPct.format(r.probabilite_infection * 100)}\u202f%`;
-      ligne.querySelectorAll("td")[3].textContent = `${fmtMs.format(r.latence_ms)} ms`;
+      const pInfection = ligne.querySelectorAll("td")[2];
+      const latence = ligne.querySelectorAll("td")[3];
+      if (r.hors_domaine) {
+        etiquette.className = "tag tag-ko";
+        etiquette.textContent = "Hors domaine";
+        etiquette.title = r.motifs.join(" ");
+        pInfection.textContent = "—";
+        latence.textContent = "—";
+      } else if (r.erreur) {
+        etiquette.className = "tag tag-ko";
+        etiquette.textContent = "Illisible";
+        etiquette.title = r.erreur;
+        pInfection.textContent = "—";
+        latence.textContent = "—";
+      } else {
+        etiquette.className = r.infectee ? "tag tag-pos" : "tag tag-neg";
+        etiquette.textContent = r.infectee ? "Parasitée" : "Saine";
+        pInfection.textContent = `${fmtPct.format(r.probabilite_infection * 100)}\u202f%`;
+        latence.textContent = `${fmtMs.format(r.latence_ms)} ms`;
+      }
       $("tr", ligne).style.setProperty("--row", String(i));
       corpsLot.appendChild(ligne);
     });
@@ -304,5 +323,5 @@ function installerLaboratoire() {
 }
 
 observerRevelation();
-activerInclinaison();
+installerPlanche();
 installerLaboratoire();
