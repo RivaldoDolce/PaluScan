@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 from fasthtml.common import FastHTML
@@ -24,7 +25,10 @@ app = create_app()
 
 
 def main() -> None:
-    """Lancement du serveur (port 7860, conforme aux Spaces Hugging Face)."""
+    """Lancement du serveur (port dynamique sur Render, 7860 par défaut en local et sur HF)."""
     import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=7860)
+    # Récupère le port attribué par Render (ou prend 7860 si la variable n'existe pas)
+    port = int(os.environ.get("PORT", 7860))
+
+    uvicorn.run(app, host="0.0.0.0", port=port)
