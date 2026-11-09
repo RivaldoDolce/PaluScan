@@ -19,3 +19,6 @@ __pycache__/
 
 # Système
 .DS_Store
+
+# Artefact de session du sandbox
+.sesskey
