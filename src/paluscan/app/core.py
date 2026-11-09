@@ -12,6 +12,7 @@ from PIL import Image, UnidentifiedImageError
 from ..config import METRICS_PATH
 from ..explain import OcclusionExplainer
 from ..predict import Predictor
+from ..validite import VerdictValidite, evaluer_validite
 
 TAILLE_MAX_OCTETS = 8 * 1024 * 1024
 FORMATS_ACCEPTES = {"PNG", "JPEG"}
@@ -26,6 +27,14 @@ _VALEURS_PAR_DEFAUT = {
 
 class ErreurValidation(Exception):
     """Requête client invalide : format, taille ou contenu d'image."""
+
+
+class ErreurHorsDomaine(ErreurValidation):
+    """Image décodable mais rejetée par le garde-fou de domaine."""
+
+    def __init__(self, verdict: VerdictValidite) -> None:
+        super().__init__("Cette image ne ressemble pas à un frottis sanguin coloré au Giemsa.")
+        self.motifs = verdict.motifs
 
 
 def charger_metriques() -> dict:
@@ -63,7 +72,10 @@ class Moteur:
         return image.convert("RGB")
 
     def analyser(self, image: Image.Image, avec_carte: bool = False) -> dict:
-        """Inférence complète : décision au seuil de Youden + carte d'occlusion."""
+        """Contrôle de domaine, puis inférence : décision au seuil de Youden + carte."""
+        verdict = evaluer_validite(image)
+        if not verdict.accepte:
+            raise ErreurHorsDomaine(verdict)
         tensor = self.predictor.preprocess(image)
         p = self.predictor.predict_array(tensor)
         infectee = p.prob_infected >= self.seuil_youden

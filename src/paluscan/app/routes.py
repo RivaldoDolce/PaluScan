@@ -7,11 +7,14 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 
 from . import views
-from .core import NOMBRE_MAX_IMAGES_LOT, ErreurValidation, get_moteur
+from .core import NOMBRE_MAX_IMAGES_LOT, ErreurHorsDomaine, ErreurValidation, get_moteur
 
 
-def _erreur(message: str, statut: int) -> JSONResponse:
-    return JSONResponse({"erreur": message}, status_code=statut)
+def _erreur(message: str, statut: int, motifs: list[str] | None = None) -> JSONResponse:
+    charge: dict = {"erreur": message}
+    if motifs:
+        charge["motifs"] = motifs
+    return JSONResponse(charge, status_code=statut)
 
 
 def _gestionnaire_http(req: Request, exc: HTTPException):
@@ -49,6 +52,8 @@ def monter(app) -> None:
             image = get_moteur().decodage(await fichier.read())
             avec_carte = formulaire.get("occlusion") != "0"
             return get_moteur().analyser(image, avec_carte=avec_carte)
+        except ErreurHorsDomaine as exc:
+            return _erreur(str(exc), 422, list(exc.motifs))
         except ErreurValidation as exc:
             return _erreur(str(exc), 415)
 
@@ -62,19 +67,21 @@ def monter(app) -> None:
             return _erreur(f"Maximum {NOMBRE_MAX_IMAGES_LOT} images par lot.", 413)
         moteur = get_moteur()
         resultats = []
-        try:
-            for fichier in fichiers:
+        for fichier in fichiers:
+            try:
                 image = moteur.decodage(await fichier.read())
-                p = moteur.predictor.predict_image(image)
+                r = moteur.analyser(image, avec_carte=False)
                 resultats.append(
                     {
-                        "infectee": p.prob_infected >= moteur.seuil_youden,
-                        "probabilite_infection": round(p.prob_infected, 4),
-                        "latence_ms": round(p.latency_ms, 2),
+                        "infectee": r["infectee"],
+                        "probabilite_infection": r["probabilite_infection"],
+                        "latence_ms": r["latence_ms"],
                     }
                 )
-        except ErreurValidation as exc:
-            return _erreur(str(exc), 415)
+            except ErreurHorsDomaine as exc:
+                resultats.append({"hors_domaine": True, "motifs": list(exc.motifs)})
+            except ErreurValidation as exc:
+                resultats.append({"erreur": str(exc)})
         return {"resultats": resultats}
 
     app.exception_handlers[HTTPException] = _gestionnaire_http

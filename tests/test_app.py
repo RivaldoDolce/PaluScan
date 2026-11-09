@@ -76,6 +76,21 @@ def test_analyser_image_saine_sans_carte(client):
     assert "carte" not in resultat
 
 
+def test_analyser_refuse_photo_hors_domaine(client):
+    """Une photo ne ressemblant pas à un frottis est refusée avant toute prédiction."""
+    image = Image.new("RGB", (160, 160), (60, 140, 90))
+    tampon = io.BytesIO()
+    image.save(tampon, format="PNG")
+    reponse = client.post(
+        "/api/analyser",
+        files={"image": ("photo.png", tampon.getvalue(), "image/png")},
+    )
+    assert reponse.status_code == 422
+    charge = reponse.json()
+    assert "erreur" in charge
+    assert charge["motifs"]
+
+
 def test_analyser_rejette_format_inconnu(client):
     reponse = client.post(
         "/api/analyser", files={"image": ("dessin.svg", b"<svg/>", "image/svg+xml")}
@@ -100,6 +115,22 @@ def test_lot_deux_images(client):
     assert len(resultats) == 2
     assert resultats[0]["infectee"] is True
     assert resultats[1]["infectee"] is False
+
+
+def test_lot_marque_les_hors_domaine(client):
+    image = Image.new("RGB", (120, 120), (30, 120, 200))
+    tampon = io.BytesIO()
+    image.save(tampon, format="PNG")
+    fichiers = [
+        ("images", ("a.png", EXEMPLE_SAIN.read_bytes(), "image/png")),
+        ("images", ("photo.png", tampon.getvalue(), "image/png")),
+    ]
+    reponse = client.post("/api/analyser-lot", files=fichiers)
+    assert reponse.status_code == 200
+    resultats = reponse.json()["resultats"]
+    assert resultats[0]["infectee"] is False
+    assert resultats[1]["hors_domaine"] is True
+    assert resultats[1]["motifs"]
 
 
 def test_lot_limite_de_taille(client):

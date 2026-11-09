@@ -33,6 +33,9 @@ calibration et matrice de confusion exposées sur la page `/methode`.
 - **Découpage par lame** : les cellules d'une même lame ne sont jamais réparties
   entre entraînement, validation et test — élimine la fuite statistique qui gonfle
   artificiellement les métriques sur ce jeu.
+- **Garde-fou d'entrée** : tout upload passe un contrôle statistique (dôme de couleur
+  Giemsa par distance de Mahalanobis, saturation, grain, bords, matière, fond) — une photo
+  ou une capture d'écran est refusée avec ses motifs, jamais diagnostiquée.
 - **MalariaNet** : 3 blocs convolutifs (32/64/128) + tête dense, 62 000 paramètres,
   entraîné sur 2 cœurs CPU avec augmentation et arrêt anticipé (16 époques).
 - **Statistique sans dépendance** : Wilson, ROC, bootstrap stratifié, McNemar exact
@@ -75,16 +78,17 @@ src/paluscan/
   evaluate.py    métriques du jeu de test, courbes, rapport JSON
   explain.py     cartes d'occlusion via ONNXRuntime
   predict.py     encapsulation d'inférence
+  validite.py    garde-fou de domaine : contrôle Giemsa avant toute prédiction
   config.py      chemins et constantes
   app/           FastHTML : vues, routes, statiques (CSS/JS/fonts)
-tests/           pytest : statistique, découpage, inférence, application
+tests/           pytest : statistique, découpage, garde-fou, inférence, application
 scripts/         préparation des données, baseline, export ONNX
 ```
 
 ## Tests et qualité
 
 ```bash
-uv run pytest          # 31 tests
+uv run pytest          # 42 tests
 uv run ruff check .    # lint
 uv run ruff format .   # format
 ```
