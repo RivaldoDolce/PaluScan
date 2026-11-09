@@ -97,7 +97,7 @@ La CI GitHub Actions exécute lint, format et tests à chaque poussée.
 
 ## Déploiement
 
-L'image Docker écoute sur le port 7860 et fonctionne telle quelle sur
+L'image Docker écoute sur le port 7860 par défaut et fonctionne telle quelle sur
 Hugging Face Spaces (sdk `docker`) : pousser le dépôt dans un Space.
 L'en-tête YAML du présent README déclare la configuration requise.
 
