@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Détection du paludisme sur frottis sanguins par deep learning, déployable en démonstration web."
 readme = "README.md"
 requires-python = ">=3.12"
-license = { text = "MIT" }
+license = { text = "Proprietary" }
 dependencies = [
     "python-fasthtml>=0.14",
     "numpy>=2.0",

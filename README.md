@@ -3,7 +3,8 @@ title: PaluScan
 emoji: C
 sdk: docker
 app_port: 7860
-license: mit
+license: other
+license_name: PaluScan Proprietary License
 short_description: Détection du paludisme sur frottis sanguins par un CNN léger
 ---
 
@@ -12,6 +13,10 @@ short_description: Détection du paludisme sur frottis sanguins par un CNN lége
 Détection du paludisme sur frottis sanguins minces par un réseau convolutif léger,
 avec explicabilité par occlusion, statistique inférentielle écrite à la main et
 application web interactive (FastHTML + ONNXRuntime).
+
+> **Licence propriétaire** — PaluScan est une application privée. Tous droits
+> réservés. Toute réutilisation du code, des poids ou de l'interface requiert une
+> autorisation écrite préalable. Voir [`LICENSE`](LICENSE).
 
 [![CI](https://img.shields.io/badge/CI-GitHub_Actions-2088ff)](#deploiement)
 
@@ -103,9 +108,18 @@ L'en-tête YAML du présent README déclare la configuration requise.
 
 ## Données et licence
 
-- Corpus NIH / LSHTM « Malaria Cell Images » (27 558 cellules, 64×64, Giemsa),
-  distribué sous licence CC BY 4.0 via Mendeley Data (doi : 10.17632/y7z2vg7fmy).
-- Code : MIT (voir `LICENSE`).
+- **Application et code** : PaluScan est une application **privée et
+  propriétaire**. Le code source, les poids des modèles, l'interface et la
+  documentation sont protégés : ils ne peuvent être copiés, modifiés,
+  distribués, publiés ni exploités, en tout ou partie, sans autorisation écrite
+  préalable du titulaire des droits. Tous droits réservés — voir
+  [`LICENSE`](LICENSE).
+- **Corpus** : NIH / LSHTM « Malaria Cell Images » (27 558 cellules, 64×64,
+  Giemsa), distribué sous licence CC BY 4.0 via Mendeley Data
+  (doi : 10.17632/y7z2vg7fmy). Cette licence reste distincte de celle du
+  logiciel et impose l'attribution du corpus.
+- **Composants tiers** : les bibliothèques et polices utilisées conservent leurs
+  licences respectives ; IBM Plex est distribué sous SIL Open Font License 1.1.
 
 PaluScan est un projet d'étude : aucune décision médicale ne doit s'appuyer
 sur ses sorties.

@@ -1,21 +1,55 @@
-MIT License
+LICENCE PROPRIÉTAIRE — PaluScan
+===============================
 
-Copyright (c) 2025 PaluScan
+Copyright (c) 2025-2026 PaluScan. Tous droits réservés.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+PaluScan est une application privée et propriétaire. Le présent fichier définit
+les conditions d'utilisation du logiciel, du code source, des poids des modèles,
+de l'interface, des textes et de la documentation associés (ensemble, « le
+Logiciel »).
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+1. Absence de concession de licence
+Aucun droit, titre ou intérêt sur le Logiciel n'est concédé, expressément ou
+implicitement, par la mise à disposition du dépôt, du code source, de
+l'application ou de tout autre élément. L'accès au Logiciel ne vaut pas
+autorisation d'utilisation.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+2. Utilisations interdites
+Sauf autorisation écrite préalable du titulaire des droits, il est interdit de :
+
+- copier, reproduire, publier, diffuser ou rendre accessible le Logiciel, en
+  tout ou partie ;
+- le modifier, l'adapter, le traduire, le décompiler, le désassembler ou tenter
+  d'en extraire le code source ou les poids ;
+- le distribuer, le sous-licencier, le vendre, le louer, le prêter ou le mettre
+  à disposition de tiers ;
+- l'utiliser pour entraîner, évaluer ou améliorer un autre modèle ou service ;
+- exploiter le Logiciel ou ses sorties à des fins commerciales ;
+- supprimer ou altérer les mentions de copyright, de licence ou d'attribution.
+
+3. Composants tiers et données
+La présente licence ne s'applique pas :
+
+- au corpus NIH / LSHTM « Malaria Cell Images », distribué sous licence
+  CC BY 4.0 (doi : 10.17632/y7z2vg7fmy), qui conserve sa licence et ses
+  obligations d'attribution ;
+- aux bibliothèques, outils et polices tierces intégrés ou utilisés par le
+  Logiciel, qui restent soumis à leurs licences respectives (notamment IBM Plex,
+  sous SIL Open Font License 1.1).
+
+Ces éléments ne peuvent être réutilisés que dans les limites de leurs licences
+d'origine.
+
+4. Aucune garantie
+Le Logiciel est fourni « en l'état », sans garantie d'aucune sorte, expresse ou
+implicite, notamment de qualité marchande, d'adéquation à un usage particulier
+ou d'absence de contrefaçon. Le titulaire des droits ne pourra être tenu
+responsable d'aucun dommage direct ou indirect résultant de l'utilisation ou de
+l'impossibilité d'utiliser le Logiciel.
+
+5. Droit applicable
+Les présentes conditions sont régies par le droit applicable au siège du
+titulaire des droits. Toute utilisation non expressément autorisée est
+interdite et pourra faire l'objet de poursuites.
+
+Pour toute demande d'autorisation, contacter le titulaire des droits.
